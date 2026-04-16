@@ -1,0 +1,90 @@
+/* FIXED SIDEBAR */
+section[data-testid="stSidebar"] {
+    position: fixed;
+    width: 260px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+}
+
+/* SHIFT CONTENT */
+section.main {
+    margin-left: 260px;
+}
+
+/* WRAPPER */
+.sidebar {
+    padding: 16px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* BRAND */
+.brand {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.brand-title {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.brand-sub {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+/* SECTION TITLE */
+.section-title {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 6px;
+}
+
+/* MENU ITEM */
+.menu-item {
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* ACTIVE */
+.menu-item.active {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+/* FLOW BUTTON STYLE */
+.sidebar .stButton > button {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 13px;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.sidebar .stButton > button:hover {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+}
+/* FLOW */
+.flow div {
+    font-size: 13px;
+    padding: 6px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    background: #f9fafb;
+}
+
+/* USER */
+.user-box {
+    background: #f3f4f6;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
