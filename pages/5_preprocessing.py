@@ -16,6 +16,7 @@ st.markdown("""
 
 load_css(
     "assets/style/style.css",
+    "assets/style/sidebar.css",
     "assets/style/preprocessing.css"
 )
 
@@ -54,8 +55,7 @@ if "pipeline" not in st.session_state:
         "cleaning": False,
         "selection": False,
         "transform": False,
-        "integration": False,
-        "normalization": False
+        "integration": False
     }
 
 # reset kalau dataset beda
@@ -67,8 +67,7 @@ if st.session_state.last_dataset_id != dataset_id:
         "cleaning": False,
         "selection": False,
         "transform": False,
-        "integration": False,
-        "normalization": False
+        "integration": False
     }
 
     for key in ["cleaned", "selected", "transformed", "integrated", "normalized"]:
@@ -90,8 +89,7 @@ steps = [
     ("cleaning", "Cleaning"),
     ("selection", "Selection"),
     ("transform", "Transform"),
-    ("integration", "Integration"),
-    ("normalization", "Normalization")
+    ("integration", "Integration")
 ]
 
 cols = st.columns(len(steps))
@@ -257,35 +255,7 @@ elif st.session_state.active_step == "integration":
     show_quality(df)
 
     st.dataframe(st.session_state.integrated, use_container_width=True, height=500)
-# ======================
-# NORMALIZATION
-# ======================
-elif st.session_state.active_step == "normalization":
 
-    if not st.session_state.pipeline["integration"]:
-        st.warning("⚠️ Integration dulu!")
-        st.stop()
-
-    if "normalized" not in st.session_state:
-        st.session_state.normalized = normalize_data(
-            st.session_state.integrated
-        )
-        st.session_state.pipeline["normalization"] = True
-
-    df = st.session_state.normalized
-
-    st.markdown("### 📊 Data Final (Siap Clustering)")
-
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Rows", df.shape[0])
-    c2.metric("Columns", df.shape[1])
-    c3.metric("Missing", df.isna().sum().sum())
-
-    show_quality(df)
-    
-    st.dataframe(st.session_state.normalized, use_container_width=True, height=500)
-
-    st.success("Data siap untuk clustering ")
 # ======================
 # NAV BUTTON
 # ======================

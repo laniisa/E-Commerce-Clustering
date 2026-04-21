@@ -13,7 +13,8 @@ st.markdown("""
 
 load_css(
     "assets/style/style.css",
-    "assets/style/upload.css"
+    "assets/style/upload.css",
+    "assets/style/sidebar.css"
 )
 
 check_login()
@@ -153,7 +154,7 @@ with col2:
         # pagination
         st.markdown('<div class="pagination">', unsafe_allow_html=True)
 
-        col1, col2, col3 = st.columns([6,1,1])
+        col1, col2, col3 = st.columns([5,1,1])
 
         with col1:
             st.markdown(f"""

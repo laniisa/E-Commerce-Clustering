@@ -8,6 +8,7 @@ from modules.daashboard import get_clustering_history
 
 load_css(
     "assets/style/style.css",
+    "assets/style/sidebar.css",
     "assets/style/dashboard.css"
 )
 
@@ -126,7 +127,6 @@ with right:
         dbi_color = "green" if row.dbi_score < 0.5 else "red"
 
         is_active = row.id == st.session_state.selected_history
-        bg = "#fce7f3" if is_active else "transparent"
         
         with col1:
             st.markdown(f"""
@@ -188,7 +188,7 @@ st.divider()
 # ======================
 col1, col2, col3= st.columns([1,5,1])
 with col1:
-    if st.button("Panduan", use_container_width=True):
+    if st.button("Panduan", key="das_pan",use_container_width=True):
         st.switch_page("pages/9_guide.py")
 
 with col3:

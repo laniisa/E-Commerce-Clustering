@@ -1,0 +1,33 @@
+/* PREFIX: db- */
+
+.db-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+/* TABLE */
+.db-table-header {
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr 2fr 1fr;
+    font-size: 13px;
+    font-weight: bold;
+    color: #6b7280;
+    padding: 8px;
+}
+
+.db-table-row {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+/* BUTTON KHUSUS DASHBOARD */
+.db-container .stButton > button {
+    background: #6366f1;
+    color: white;
+    border-radius: 8px;
+}

@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import plotly.express as px
 import io
 
@@ -21,6 +20,7 @@ st.markdown("""
 
 load_css(
     "assets/style/style.css",
+    "assets/style/sidebar.css",
     "assets/style/clustering.css"
 )
 check_login()
@@ -58,7 +58,7 @@ with col1:
         st.warning("Minimal 2 fitur")
         st.stop()
 
-    X = df[selected_cols]
+    X = cols_cluster(df[selected_cols])
 
 with col2:
     method = st.selectbox("Metode K", ["Manual", "Otomatis"])
@@ -66,62 +66,67 @@ with col2:
 with col3:
     if method == "Manual":
         k = st.number_input("Jumlah K", 2, 10, 3)
+    
     if method == "Otomatis":
-        best_k, scores = find_best_k(X)
-
-        # simpan ke session
-        st.session_state.best_k = best_k
-        st.session_state.silhouette_scores = scores
-
+        if st.button("🔍 Cari K Optimal", use_container_width=True):
+            with st.spinner("Mencari K terbaik..."):
+                best_k, scores = silhouette_scores(X)
+            st.session_state.best_k = best_k
+            st.session_state.silhouette_scores = scores
         # ======================
         # TAMPILKAN GRAFIK
         # ======================
-        if "silhouette_scores" in st.session_state:
+if "silhouette_scores" in st.session_state:
 
-            scores = st.session_state.silhouette_scores
-            best_k = st.session_state.best_k
+    scores = st.session_state.silhouette_scores
+    best_k = st.session_state.best_k
 
-            st.markdown("### 📈 Silhouette Score vs K")
+    st.markdown("### 📈 Silhouette Score ")
 
-            df_score = pd.DataFrame({
-                "k": list(scores.keys()),
-                "score": list(scores.values())
-            })
+    df_score = pd.DataFrame({
+       "k": list(scores.keys()),
+       "score": list(scores.values())
+    }).dropna().sort_values("k")
 
-            fig = px.line(
-                df_score,
-                x="k",
-                y="score",
-                markers=True,
-                title="Silhouette Score"
-            )
+    fig = px.line(
+        df_score,
+        x="k",
+        y="score",
+        markers=True,
+        title="Silhouette Score"
+    )
 
-            # highlight best k
-            fig.add_scatter(
-                x=[best_k],
-                y=[scores[best_k]],
-                mode="markers",
-                marker=dict(size=12, color="red"),
-                name=f"Best K = {best_k}"
-            )
+    
+    if best_k is not None:  # ✅ FIX
+        fig.add_scatter(
+            x=[best_k],
+            y=[scores[best_k]],
+            mode="markers",
+            marker=dict(size=12, color="red"),
+            name=f"Best K = {best_k}"
+        )
 
-            st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
-            st.success(f"✅ K optimal berdasarkan Silhouette Score adalah: **{best_k}**")
+    st.success(f"✅ K optimal berdasarkan Silhouette Score adalah: **{best_k}**")
 
+st.session_state.X = X
 
 # ======================
 # BUTTON
 # ======================
 if st.button("Proses Clustering", use_container_width=True):
-    if method == "Otomatis":
+
+    if method == "Manual":
+        k_used = int(k)
+
+    else:
         if "best_k" not in st.session_state:
             st.warning("Silakan cari K optimal dulu!")
             st.stop()
-        k = st.session_state.best_k
+        k_used = int(st.session_state.best_k)
 
-    labels, model = run_kmedoids(X, int(k))
-
+    labels, model = run_kmedoids(X, k_used)
 
     df_clustered = attach_cluster(df, labels)
     eval_result = evaluate_clustering(X, labels)
@@ -129,21 +134,24 @@ if st.button("Proses Clustering", use_container_width=True):
     st.session_state.clustered = df_clustered
     st.session_state.eval = eval_result
     st.session_state.model = model
-    st.session_state.X = X
-
-
+    st.session_state.k_used = k_used  # simpan biar konsisten
 # ======================
 # RESULT SECTION
 # ======================
 if "clustered" in st.session_state:
-
     dfc = st.session_state.clustered
     eval_result = st.session_state.eval
     model = st.session_state.get("model")
-    X = st.session_state.get("X")
+    if model is None:
+        st.warning("Model belum tersedia")
+        st.stop()
 
     st.markdown("---")
     st.markdown("## 📊 Clustering Result")
+
+    summary = get_cluster_summary(dfc)
+    labels_map = label_cluster(summary)
+    summary["label"] = summary["cluster"].map(labels_map)
 
     # ======================
     # LAYOUT: GRAPH + METRIC
@@ -159,44 +167,25 @@ if "clustered" in st.session_state:
                 "Pilih Platform",
                 ["Semua"] + list(dfc["platform"].unique())
             )
-
+            
             if selected_platform != "Semua":
                 df_filtered = dfc[dfc["platform"] == selected_platform]
             else:
                 df_filtered = dfc
-            
-            pca = PCA(n_components=2)
-            X_pca = pca.fit_transform(X)
 
-            dfc["PC1"] = X_pca[:, 0]
-            dfc["PC2"] = X_pca[:, 1]
 
-            fig = px.scatter(
-                dfc,
-                x="PC1",
-                y="PC2",
-                color="cluster",
-                title="Clustering Visualization (PCA)"
-            )
+            # baru filter
+            if selected_platform != "Semua":
+                df_plot = dfc[dfc["platform"] == selected_platform]
+            else:
+                df_plot = dfc
+                
+            plot_path = cluster_plot(dfc, dataset_id, st.session_state.X)
 
-            medoids = model.cluster_centers_
-            medoids_pca = pca.transform(medoids)
-
-            fig.add_scatter(
-                x=medoids_pca[:, 0],
-                y=medoids_pca[:, 1],
-                mode="markers",
-                marker=dict(size=14, color="red", symbol="x"),
-                name="Medoid"
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            st.image(plot_path, caption="Clustering Visualization (PCA)")
 
         with tab2:
             st.markdown("### 📋 Ringkasan Cluster")
-
-            summary = get_cluster_summary(dfc)
-            labels_map = label_cluster(summary)
-            summary["label"] = summary["cluster"].map(labels_map)
 
             st.dataframe(summary, use_container_width=True)
 
@@ -204,6 +193,16 @@ if "clustered" in st.session_state:
         # SAVE
         # ======================
         if st.button("💾 Simpan Hasil"):
+            k_used = st.session_state.get("k_used")
+            if k_used is None:
+                if method == "Manual":
+                    k_used = k
+                elif "best_k" in st.session_state:
+                    k_used = st.session_state.best_k
+
+            if k_used is None:
+                st.error("Nilai K tidak tersedia. Silakan lakukan clustering terlebih dahulu.")
+                st.stop()
             if "clustered" not in st.session_state:
                 st.error("Belum ada hasil clustering!")
                 st.stop()
@@ -211,12 +210,12 @@ if "clustered" in st.session_state:
             df_cluster = st.session_state.clustered
 
             file_csv = save_cluster_csv(df_cluster, dataset_id)
-            file_plot = save_plot(df_cluster, dataset_id)
+            file_plot = cluster_plot(df_cluster, dataset_id, st.session_state.X)
 
             save_summary(
                 dataset_id,
                 user_id,
-                k,
+                k_used,
                 method,
                 st.session_state.eval["Silhouette"],
                 st.session_state.eval["DBI"],
@@ -230,9 +229,9 @@ if "clustered" in st.session_state:
         st.markdown("### 📌 Evaluation")
         colA, colB = st.columns(2)
         with colA:
-            st.metric("Silhouette Score", round(eval_result["Silhouette"], 3))
+            st.metric("Silhouette Score", round(eval_result["Silhouette"], 3) if (eval_result["Silhouette"]) else "-" )
         with colB:
-            st.metric("Davies-Bouldin Index (DBI)", round(eval_result["DBI"], 3))
+            st.metric("Davies-Bouldin Index (DBI)", round(eval_result["DBI"], 3) if (eval_result["DBI"]) else "-")
 
         
         # ======================

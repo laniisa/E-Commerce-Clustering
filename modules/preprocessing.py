@@ -1,7 +1,9 @@
 import pandas as pd
 import re
 import streamlit as st
+import numpy as np
 
+\
 # ======================
 # CLEANING
 # ======================
@@ -382,24 +384,6 @@ def transform_data(df, platform):
 def integrate_data(dfs):
     return pd.concat(dfs, ignore_index=True)
 
-
-# ======================
-# NORMALIZATION
-# ======================
-def normalize_data(df):
-
-    numeric_cols = ["price", "discount", "quantity", "total_sales"]
-
-    for col in numeric_cols:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
-
-    df = df.dropna()
-
-    # min-max scaling
-    for col in numeric_cols:
-        df[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
-
-    return df
 
 def dataset_overview(dfs):
     total_rows = sum(df.shape[0] for df in dfs)

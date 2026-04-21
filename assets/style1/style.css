@@ -1,0 +1,34 @@
+:root {
+    --primary: #6366f1;
+    --bg: #f9fafb;
+    --text: #111827;
+    --muted: #6b7280;
+}
+
+/* BASE */
+.stApp {
+    background: var(--bg);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* FIX LAYOUT TOP (INI PENTING) */
+section.main > div {
+    align-items: flex-start !important;
+}
+
+/* CONTAINER */
+.block-container {
+    max-width: 1200px;
+    margin: auto;
+    padding-top: 20px;
+}
+
+/* TEXT */
+h1, h2, h3 {
+    color: var(--text);
+}
+
+/* INPUT ONLY */
+.stTextInput input {
+    border-radius: 8px;
+}

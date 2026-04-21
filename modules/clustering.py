@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 from config.database import connect_db
 from sklearn_extra.cluster import KMedoids
 from sklearn.metrics import silhouette_score, davies_bouldin_score
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from pathlib import Path
 import datetime
 import warnings
@@ -11,10 +13,10 @@ import warnings
 # =========================
 # PREPARE DATA
 # =========================
-def prepare_clustering_data(df):
-    features = ["price", "discount", "quantity", "total_sales"]
+features = ["price", "discount", "quantity", "total_sales"]
 
-    X = df[features].copy()
+def cols_cluster(df):
+    X = df.copy()
     
     if X.isnull().any().any():
         X = X.fillna(X.mean())
@@ -25,47 +27,7 @@ def prepare_clustering_data(df):
 # ===============================
 # SILHOUETTE SCORE
 # ===============================
-def calculate_silhouette_scores(X, k_range=range(2, 11)):
-    """Calculate silhouette scores for different k values"""
-    scores = {}
-    
-    for k in k_range:
-        if k >= X.shape[0]:
-            continue
-            
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            kmedoids = KMedoids(
-                n_clusters=k,
-                metric="euclidean",
-                init="k-medoids++",
-                method="alternate",
-                random_state=42,
-                max_iter=300
-            )
-            labels = kmedoids.fit_predict(X)
-        
-        # Check if we have at least 2 unique clusters
-        unique_labels = len(np.unique(labels))
-        if unique_labels < 2:
-            scores[k] = -1
-            continue
-            
-        try:
-            score = silhouette_score(X, labels, metric="euclidean")
-            scores[k] = score
-        except Exception as e:
-            scores[k] = -1
-            print(f"Error for k={k}: {e}")
-    
-    return scores
-
-# =========================
-# FIND BEST K (SILHOUETTE)
-# =========================
-def find_best_k(X, k_range=range(2, 11)):
-    best_k = 2
-    best_score = -1
+def silhouette_scores(X, k_range=range(2, 9)):
     scores = {}
 
     for k in k_range:
@@ -81,29 +43,27 @@ def find_best_k(X, k_range=range(2, 11)):
             )
             labels = model.fit_predict(X)
 
-            # 🔥 cek jumlah cluster unik
             if len(np.unique(labels)) < 2:
-                scores[k] = -1
+                scores[k] = None
                 continue
 
-            score = silhouette_score(X, labels, metric="euclidean")
+            score = silhouette_score(X, labels)
             scores[k] = score
 
-            if score > best_score:
-                best_score = score
-                best_k = k
+        except:
+            scores[k] = None
 
-        except Exception as e:
-            scores[k] = -1
+    valid_scores = {k: v for k, v in scores.items() if v is not None}
+    best_k = max(valid_scores, key=valid_scores.get) if valid_scores else None
 
     return best_k, scores
 
 # =========================
 # CLUSTERING
 # =========================
-def run_kmedoids(X, k):
+def run_kmedoids(X, best_k):
     model = KMedoids(
-        n_clusters=k,
+        n_clusters=int(best_k),
         init="k-medoids++", 
         metric="euclidean",
         method="alternate",  
@@ -122,6 +82,12 @@ def attach_cluster(df, labels):
 # EVALUATION
 # =========================
 def evaluate_clustering(X, labels):
+    unique_labels = len(np.unique(labels))
+
+    if unique_labels < 2:
+        return {"DBI": None,"Silhouette": None
+        }
+    
     return {
         "DBI": davies_bouldin_score(X, labels),
         "Silhouette": silhouette_score(X, labels)
@@ -138,28 +104,30 @@ def save_cluster_csv(df, dataset_id):
     path = folder / filename
 
     df.to_csv(path, index=False)
-
     return str(path)
 
 # =========================
 # SAVE PLOT
 # =========================
-def save_plot(df, dataset_id):
+def cluster_plot(df, dataset_id, X):
     folder = Path(f"assets/clustering/dataset_{dataset_id}")
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / "cluster_plot.png"
 
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(X)
+
     plt.figure()
-    plt.scatter(df["price"], df["total_sales"], c=df["cluster"])
-    plt.xlabel("Price")
-    plt.ylabel("Total Sales")
-    plt.title("Cluster Visualization")
+    plt.scatter(X_pca[:,0], X_pca[:,1], c=df["cluster"])
+    plt.title("Cluster Visualization (PCA)")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
     plt.savefig(path)
     plt.close()
 
     return str(path)
 
-def save_summary(dataset_id, user_id, k, method, silhouette, dbi, file_csv, file_plot):
+def save_summary(dataset_id, user_id, k_used, method, silhouette, dbi, file_csv, file_plot):
     conn = connect_db()
     cursor = conn.cursor()
 
@@ -170,7 +138,7 @@ def save_summary(dataset_id, user_id, k, method, silhouette, dbi, file_csv, file
     """
 
     cursor.execute(query, (
-        dataset_id, user_id, k, method,
+        dataset_id, user_id, k_used, method,
         silhouette, dbi,
         file_csv, file_plot
     ))
@@ -189,17 +157,14 @@ def get_cluster_summary(df):
         "quantity": "mean",
         "total_sales": "mean",
         "cluster": "count"
-    }).rename(columns={"cluster": "total_data"})
+    }).rename(columns={"cluster": "total_data"}).reset_index()
 
-    return summary.reset_index()
-
-
+    return summary
 # =========================
 # LABEL CLUSTER
 # =========================
 def label_cluster(summary):
     sorted_clusters = summary.sort_values("total_sales")
-
     labels = {}
 
     for i, row in enumerate(sorted_clusters.itertuples()):
@@ -230,11 +195,11 @@ def generate_insight(summary, labels):
         """
 
         if label == "High Value":
-            insight += "👉 Produk sangat potensial (high sales)"
+            insight += "\n👉 Produk sangat potensial (high sales)"
         elif label == "Low Value":
-            insight += "👉 Perlu strategi peningkatan penjualan"
+            insight += "\n👉 Perlu strategi peningkatan penjualan"
         else:
-            insight += "👉 Performa sedang"
+            insight += "\n👉 Performa sedang"
 
         insights.append(insight)
 

@@ -22,27 +22,8 @@ body {
 [data-testid="metric-container"] {
     border-radius: 12px;
     padding: 10px;
-
     background: rgba(255,255,255,0.5);
 }
-
-.stButton>button {
-    border-radius: 10px;
-    height: 42px;
-    font-weight: 600;
-
-    background: linear-gradient(135deg, #4f46e5, #3b82f6);
-    color: white;
-    border: none;
-
-    transition: 0.25s;
-}
-
-.stButton>button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-
 
 .stSelectbox div {
     border-radius: 10px !important;

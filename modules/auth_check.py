@@ -3,7 +3,7 @@ import streamlit as st
 def check_login():
     if "user" not in st.session_state:
         st.warning("Silakan login terlebih dahulu!")
-        st.switch_page("pages/1_login.py")
+        st.switch_page("app.py")
 
 def load_css(*css_files):
     for css in css_files:

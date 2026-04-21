@@ -62,23 +62,3 @@ section.main > div {
     border-radius: 10px;
     border: 1px solid #e5e7eb;
 }
-
-.nav-left button {
-    width: 120px !important;
-    height: 38px !important;
-}
-
-.nav-right {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.nav-right button {
-    width: 120px !important;
-    height: 38px !important;
-}
-
-button[kind="secondary"] {
-    height: 60px !important;
-    white-space: pre-line;
-}

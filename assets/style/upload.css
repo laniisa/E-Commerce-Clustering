@@ -41,22 +41,12 @@
     color: #3730a3;
 }
 
-/* BUTTON ICON */
-.stButton > button {
-    border-radius: 6px;
-    height: 34px;
-    font-size: 14px;
-}
 
 /* TABLE PREVIEW */
 [data-testid="stDataFrame"] {
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     overflow: hidden;
-}
-
-.stButton > button:hover {
-    background: #4f46e5;
 }
 
 .table-header {

@@ -1,90 +1,89 @@
 /* FIXED SIDEBAR */
 section[data-testid="stSidebar"] {
-    position: fixed;
     width: 260px;
-    height: 100vh;
-    background: #ffffff;
+    background: #f9fafb;
     border-right: 1px solid #e5e7eb;
+    margin: 0 !important;
 }
 
-/* SHIFT CONTENT */
-section.main {
-    margin-left: 260px;
+section[data-testid="stSidebar"] .stButton > button {
+    background: transparent !important;
+    color: #374151 !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
 }
 
+section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+    gap: 0px !important;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div {
+    gap: 0px !important;
+}
 /* WRAPPER */
-.sidebar {
-    padding: 16px;
+.sb-wrapper {
     font-family: 'Segoe UI', sans-serif;
+    padding: 10px 12px;
 }
 
-/* BRAND */
-.brand {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.brand-title {
+.sb-title {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 20px;
+    color: #111827;
+    margin-top: 8px;
 }
 
-.brand-sub {
-    font-size: 11px;
-    color: #6b7280;
+.sb-sub {
+    font-size: 13px;
+    color: #6366f1;
+    margin-bottom: 14px;
 }
 
-/* SECTION TITLE */
-.section-title {
+/* GROUP */
+.sb-group {
     font-size: 11px;
     color: #9ca3af;
+    margin-top: 16px;
     margin-bottom: 6px;
+    letter-spacing: 1px;
 }
 
-/* MENU ITEM */
-.menu-item {
-    padding: 8px;
+/* BUTTON BASE */
+.sb-wrapper .stButton > button {
+    color: #374151;
     border-radius: 8px;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-/* ACTIVE */
-.menu-item.active {
-    background: #eef2ff;
-    color: #4f46e5;
-    font-weight: 600;
-}
-
-/* FLOW BUTTON STYLE */
-.sidebar .stButton > button {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 8px;
-    font-size: 13px;
     text-align: left;
-    margin-bottom: 5px;
+    padding: 8px 12px;
+    font-size: 13px;
+    transition: all 0.15s ease;
 }
 
-.sidebar .stButton > button:hover {
-    background: #eef2ff;
-    border-color: #c7d2fe;
+/* HOVER */
+.sb-wrapper .stButton > button:hover {
+    background: #c1d1f2;
+    color: #4338ca;
 }
-/* FLOW */
-.flow div {
+
+.sb-link {
+    padding: 8px 12px;
+    border-radius: 8px;
     font-size: 13px;
-    padding: 6px;
-    border-radius: 6px;
-    margin-bottom: 4px;
-    background: #f9fafb;
+    background: #eef2ff;
+    color: #4338ca;
+    font-weight: 600;
+    border-left: 3px solid #6366f1;
 }
 
 /* USER */
-.user-box {
-    background: #f3f4f6;
+.sb-user {
     padding: 10px;
-    border-radius: 10px;
     text-align: center;
+    font-size: 13px;
+    color: #374151;
+}
+
+/* FIX BUTTON KHUSUS SIDEBAR */
+.sb-wrapper .stButton > button {
+    box-shadow: none !important;
 }
