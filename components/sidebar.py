@@ -5,11 +5,12 @@ load_css("assets/style/sidebar.css")
 
 def menu_item(label, page, active):
     if active:
-        st.markdown(f'<div class="sb-link active">{label}</div>', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="sb-link active">{label}</div>
+        ''', unsafe_allow_html=True)
     else:
-        if st.button(label, use_container_width=True):
+        if st.button(label, key=label, use_container_width=True):
             st.switch_page(page)
-
 
 def show_sidebar(active_page="dashboard"):
     with st.sidebar:
@@ -29,8 +30,6 @@ def show_sidebar(active_page="dashboard"):
         
         menu_item("Dashboard", "pages/3_dashboard.py", active_page=="dashboard")
         menu_item("Panduan", "pages/9_guide.py", active_page=="guide")
-        menu_item("History", "pages/8_history.py", active_page=="history")
-        
 
         # CLUSTERING
         st.markdown('<div class="sb-group" >CLUSTERING</div>', unsafe_allow_html=True)

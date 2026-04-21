@@ -4,7 +4,8 @@ from components.sidebar import show_sidebar
 
 load_css(
     "assets/style/style.css",
-    "assets/style/sidebar.css"
+    "assets/style/sidebar.css",
+    "assets/style/dashboard.css"
 )
 st.markdown("""
 <style>
@@ -12,7 +13,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 check_login()
-show_sidebar("panduan")
+show_sidebar("guide")
 
 st.title("📘 Panduan Penggunaan Aplikasi")
 

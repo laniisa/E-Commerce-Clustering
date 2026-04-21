@@ -13,8 +13,8 @@ st.markdown("""
 
 load_css(
     "assets/style/style.css",
+    "assets/style/sidebar.css",
     "assets/style/upload.css",
-    "assets/style/sidebar.css"
 )
 
 check_login()
