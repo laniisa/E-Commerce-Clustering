@@ -19,8 +19,9 @@
 }
 
 .block-container {
-    margin: auto;
-    padding-top: 1rem;
+    margin: auto !important;
+    padding-top: 0.5rem !important;
+    max-width: 90% !important;
 }
 
 h1, h2, h3 {
@@ -30,6 +31,12 @@ h1, h2, h3 {
 .success {
     color: green;
     font-weight: 500;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
 }
 
 section.main .stButton > button {
@@ -49,7 +56,6 @@ section.main .stButton > button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
-
 /* ======================
    TEXT
 ====================== */
@@ -75,3 +81,74 @@ section.main .stButton > button:hover {
     color: #334155;
 }
 
+.metric-card{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.03);
+}
+
+.metric-label{
+    font-size:13px;
+    color:#64748b;
+    margin-bottom:8px;
+}
+
+.metric-value{
+    font-size:28px;
+    font-weight:700;
+    color:#5689e8;
+}
+
+
+.alert-box{
+    background:#eef4ff;
+    border-left:4px solid #5689e8;
+    color:#334155;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:16px;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.alert-title{
+    font-size:17px;
+    font-weight:700;
+    color:#1e3a8a;
+    margin-bottom:6px;
+}
+
+.alert-desc{
+    font-size:13px;
+    color:#475569;
+    line-height:1.7;
+}
+.empty-box{
+    background:#ffffff;
+    border:1px dashed #cbd5e1;
+    border-radius:14px;
+    padding:30px;
+    text-align:center;
+    color:#64748b;
+    margin:20px 0;
+}
+
+/* BUTTON */
+div[data-testid="stVerticalBlock"] div.stButton > button,
+div[data-testid="stDownloadButton"] > button{
+    background:#5689e8 !important;
+    color:white !important;
+    border:none !important;
+    border-radius:8px !important;
+    min-height:38px !important;
+    font-weight:500 !important;
+}
+
+div[data-testid="stVerticalBlock"] div.stButton > button:hover,
+div[data-testid="stDownloadButton"] > button:hover{
+    background:#3f72d6 !important;
+    color:white !important;
+}

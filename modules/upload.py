@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import uuid
+import streamlit as st
 from config.database import connect_db
 
 UPLOAD_FOLDER = "assets/uploads"
@@ -127,3 +128,68 @@ def get_dataset_by_id(dataset_id):
     cursor.close()
     conn.close()
     return data
+
+def show_upload_summary(df, file_name, platform):
+    colors = {
+        "shopee": "#f97316",
+        "lazada": "#3b82f6",
+        "tiktok": "#111827"
+    }
+
+    color = colors.get(platform.lower(), "#64748b")
+
+    st.markdown(f"""
+    <div class="summary-box">
+        <div><b>{file_name}</b></div>
+        <div class="summary-meta">
+            Platform: <span style="color:{color}; font-weight:600;">{platform.capitalize()}</span> |
+            Rows: {df.shape[0]} |
+            Columns: {df.shape[1]}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def delete_datasets_db(id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "DELETE FROM datasets WHERE id=%s",
+            (int(id),)
+        )
+
+        conn.commit()
+        return True
+    except Exception as e:
+        print("Error:", e)
+        return False
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@st.dialog("Konfirmasi Hapus Datasets")
+def delete_upload(datasets):
+
+    st.warning(
+        f"Yakin ingin menghapus datasets '{datasets['dataset_name']}'?"
+    )
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+        if st.button("Hapus", use_container_width=True):
+            if delete_datasets_db(datasets["id"]):
+                st.success("Datasets berhasil dihapus!")
+                st.rerun()
+            else:
+                st.error("Gagal menghapus datasets")
+
+    with c2:
+        if st.button(
+            "Batal",
+            use_container_width=True
+        ):
+            st.rerun()
+
+            

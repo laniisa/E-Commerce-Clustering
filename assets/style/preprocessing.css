@@ -1,64 +1,99 @@
-.block {
-    padding: 14px;
-    border-radius: 12px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    margin-bottom: 10px;
+
+
+.page-title{
+    font-size:34px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:8px;
 }
 
-/* FIX biar konten mulai dari atas */
-section.main > div {
-    align-items: flex-start !important;
+.alert-box{
+    background:#eef4ff;
+    border-left:4px solid #5689e8;
+    color:#334155;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:18px;
+    font-size:14px;
+    line-height:1.7;
 }
 
-/* kasih jarak atas */
-.block-container {
-    padding-top: 1rem !important;
+/* PIPELINE BUTTON */
+div[data-testid="stHorizontalBlock"] div.stButton > button{
+    width:100%;
+    min-height:60px !important;
+    border-radius:12px !important;
+    border:1px solid #dbeafe !important;
+    background:#f8fbff !important;
+    color:#1e3a8a !important;
+    font-weight:600 !important;
+    font-size:13px !important;
 }
 
-.summary-box {
-    background: #eef2ff;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
+div[data-testid="stHorizontalBlock"] div.stButton > button:hover{
+    background:#eef4ff !important;
 }
 
-.stMetric {
-    text-align: center;
+/* FILE INFO */
+.block{
+    padding:14px;
+    border-radius:12px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    margin-bottom:10px;
+    color:#334155;
 }
 
-.step-box {
-    text-align: center;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
-    font-size: 13px;
-    transition: 0.2s;
+/* QUALITY BOX */
+.summary-box{
+    background:#eef4ff;
+    border-left:4px solid #5689e8;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:10px;
 }
 
-.step-box:hover {
-    background: #f3f4f6;
+
+.metric-card{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.03);
 }
 
-/* SECTION */
-.step-section {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 15px;
+.metric-label{
+    font-size:13px;
+    color:#64748b;
+    margin-bottom:8px;
 }
 
-/* TITLE */
-.step-title {
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 10px;
+.metric-value{
+    font-size:28px;
+    font-weight:700;
+    color:#5689e8;
 }
+
 
 /* DATAFRAME */
-[data-testid="stDataFrame"] {
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
+[data-testid="stDataFrame"]{
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+div[data-testid="stVerticalBlock"] div.stButton > button{
+    background:#5689e8 !important;
+    color:white !important;
+    border:none !important;
+    border-radius:8px !important;
+    min-height:38px !important;
+    font-weight:500 !important;
+}
+
+div[data-testid="stVerticalBlock"] div.stButton > button:hover{
+    background:#3f72d6 !important;
+    color:white !important;
 }

@@ -1,29 +1,19 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 
-# ======================
-# BASIC INFO
-# ======================
 def get_overview(df):
     return {
         "total_data": len(df),
-        "total_category": df["product_category"].nunique(),
+        "total_product": df["product_name"].nunique(),
         "total_platform": df["platform"].nunique(),
         "min_date": df["transaction_date"].min(),
         "max_date": df["transaction_date"].max()
     }
 
-# ======================
-# DESCRIPTIVE
-# ======================
 def descriptive_stats(df, num_cols):
     return df[num_cols].describe()
 
-# ======================
-# CORRELATION
-# ======================
 def correlation_matrix(df, num_cols):
     return df[num_cols].corr()
 
@@ -38,39 +28,40 @@ def platform_contribution(df):
         df.groupby("platform")
         .agg(
             total_sales=("total_sales", "sum"),
-            total_transaksi=("product_code", "count")
+            total_transaksi=("product_name", "count")
         )
         .reset_index()
     )
-# ======================
-# TREND
-# ======================
+
+#TREND PENJUALAN
 def monthly_trend(df):
     df["transaction_date"] = pd.to_datetime(df["transaction_date"])
 
-    df = df.set_index("transaction_date")
 
-    trend = df.resample("M").agg({
-        "total_sales": "sum",
-        "quantity": "sum",
-        "product_code": "count"
-    }).reset_index()
-
+    trend = (df.set_index("transaction_date")
+        .resample("ME")
+        .agg({
+            "total_sales": "sum",
+            "quantity": "sum",
+            "discount": "mean"
+        }).reset_index()
+    )
     trend["year_month"] = trend["transaction_date"].dt.strftime("%Y-%m")
 
     return trend
 
-# ======================
-# TREND PER PLATFORM
-# ======================
 def trend_platform(df):
     df["transaction_date"] = pd.to_datetime(df["transaction_date"])
 
     result = (
         df.set_index("transaction_date")
         .groupby("platform")
-        .resample("M")
-        .sum(numeric_only=True)
+        .resample("ME")
+        .agg({
+            "total_sales": "sum",
+            "quantity": "sum",
+            "discount": "mean"
+        })
         .reset_index()
     )
 
@@ -78,134 +69,224 @@ def trend_platform(df):
 
     return result
 
-# ======================
-# CATEGORY
-# ======================
-def category_sales_platform(df):
-    return (
-        df.groupby(['platform', 'product_category'])['total_sales']
-        .sum()
-        .reset_index()
-    )
 
-def category_sales(df):
-    return (
-        df.groupby("product_category")["total_sales"]
+# =========================================
+# product
+# =========================================
+
+# TOP SALES
+def product_sales(df, top_n=10):
+    result = (
+        df.groupby("product_name")["total_sales"]
         .sum()
         .sort_values(ascending=False)
+        .head(top_n)
+        .reset_index()
     )
+    return result
 
-def category_quantity(df):
-    return (
-        df.groupby("product_category")["quantity"]
+
+# BOTTOM SALES
+def product_sales_bottom(df, bottom_n=10):
+    result = (
+        df.groupby("product_name")["total_sales"]
+        .sum()
+        .sort_values(ascending=True)
+        .head(bottom_n)
+        .reset_index()
+    )
+    return result
+
+
+# TOP QUANTITY
+def product_quantity(df, top_n=10):
+    result = (
+        df.groupby("product_name")["quantity"]
         .sum()
         .sort_values(ascending=False)
-    )
-
-def category_quantity_platform(df):
-    return (
-        df.groupby(['platform', 'product_category'])['quantity']
-        .sum()
+        .head(top_n)
         .reset_index()
-    )
-
-def monthly_pattern(df):
-    df = df.copy()
-    df["month_num"] = pd.to_datetime(df["transaction_date"]).dt.month
-    df["month_name"] = pd.to_datetime(df["transaction_date"]).dt.month_name()
-
-    result = (
-        df.groupby(["month_num", "month_name"])["total_sales"]
-        .mean()
-        .reset_index()
-        .sort_values("month_num")
     )
     return result
 
-def peak_low_per_year(trend_all):
-    trend_all = trend_all.copy()
-    trend_all["year"] = pd.to_datetime(trend_all["year_month"]).dt.year
-    trend_all["month"] = pd.to_datetime(trend_all["year_month"]).dt.month_name()
 
-    peak = trend_all.loc[
-        trend_all.groupby("year")["total_sales"].idxmax()
-    ]
+# BOTTOM QUANTITY
+def product_quantity_bottom(df, bottom_n=10):
+    result = (
+        df.groupby("product_name")["quantity"]
+        .sum()
+        .sort_values(ascending=True)
+        .head(bottom_n)
+        .reset_index()
+    )
+    return result
 
-    low = trend_all.loc[
-        trend_all.groupby("year")["total_sales"].idxmin()
-    ]
 
-    return peak, low
+# product SALES PLATFORM
+def product_sales_platform(df, top_n=10):
 
-def category_monthly(df):
-    df = df.copy()
-    df["year_month"] = pd.to_datetime(df["transaction_date"]).dt.to_period("M").astype(str)
+    top_product = (
+        df.groupby("product_name")["total_sales"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(top_n)
+        .index
+    )
 
     result = (
-        df.groupby(["year_month", "product_category"])["total_sales"]
+        df[df["product_name"].isin(top_product)]
+        .groupby(['platform', 'product_name'])['total_sales']
         .sum()
         .reset_index()
     )
 
     return result
 
-def category_monthly_platform(df):
-    df = df.copy()
-    df["year_month"] = pd.to_datetime(df["transaction_date"]).dt.to_period("M").astype(str)
+
+# product QUANTITY PLATFORM
+def product_quantity_platform(df, top_n=10):
+
+    top_product = (
+        df.groupby("product_name")["quantity"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(top_n)
+        .index
+    )
 
     result = (
-        df.groupby(["year_month", "platform", "product_category"])["total_sales"]
+        df[df["product_name"].isin(top_product)]
+        .groupby(['platform', 'product_name'])['quantity']
         .sum()
         .reset_index()
     )
 
     return result
-# ======================
-# DISTRIBUTION
-# ======================
-def platform_distribution(df):
-    return df["platform"].value_counts()
+
+
+# product MONTHLY
+def product_monthly(df, top_n=5):
+
+    df = df.copy()
+
+    df["year_month"] = (
+        pd.to_datetime(df["transaction_date"])
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    top_product = (
+        df.groupby("product_name")["total_sales"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(top_n)
+        .index
+    )
+
+    result = (
+        df[df["product_name"].isin(top_product)]
+        .groupby(["year_month", "product_name"])["total_sales"]
+        .sum()
+        .reset_index()
+    )
+
+    return result
+
+
+# product MONTHLY PLATFORM
+def product_monthly_platform(df, top_n=5):
+
+    df = df.copy()
+
+    df["year_month"] = (
+        pd.to_datetime(df["transaction_date"])
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    top_product = (
+        df.groupby("product_name")["total_sales"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(top_n)
+        .index
+    )
+
+    result = (
+        df[df["product_name"].isin(top_product)]
+        .groupby(["year_month", "platform", "product_name"])["total_sales"]
+        .sum()
+        .reset_index()
+    )
+
+    return result
+
+# DISKON
+
+
+
+def discount_efc(df):
+    return df[["discount", "total_sales"]].dropna()
 
 def discount_effect(df):
-    return df[["discount", "total_sales", "platform"]]
-# ======================
-# BEST DAY
-# ======================
-def sales_per_day(df):
+    return df[["discount", "total_sales", "platform"]].dropna()
+
+
+# DIAGNOSA DATA
+
+def get_skew_outlier(df, num_cols):
+    hasil = []
+
+    for col in num_cols:
+        skew = round(df[col].skew(), 3)
+
+        Q1 = df[col].quantile(0.25)
+        Q3 = df[col].quantile(0.75)
+        IQR = Q3 - Q1
+
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
+
+        outliers = df[(df[col] < lower) | (df[col] > upper)]
+
+        hasil.append({
+            "Feature": col,
+            "Skewness": skew,
+            "Jumlah Outlier": len(outliers),
+            "Persentase (%)": round(len(outliers)/len(df)*100,2)
+        })
+
+    return pd.DataFrame(hasil)
+
+# DIAGNOSA OTOMATIS DATA
+
+def generate_data_diagnosis(df, num_cols):
+    cek = get_skew_outlier(df, num_cols)
+
+    avg_skew = round(cek["Skewness"].mean(), 3)
+    avg_out = round(cek["Persentase (%)"].mean(), 2)
+
+    # rule interpretasi skewness
+    if avg_skew > 1:
+        kondisi = f"Rata-rata skewness data sebesar {avg_skew} menunjukkan distribusi data numerik cenderung highly right-skewed dengan rata-rata outlier {avg_out}%."
+        rekom = "Log"
+
+    elif avg_skew > 0.5:
+        kondisi = f"Rata-rata skewness data sebesar {avg_skew} menunjukkan distribusi data cukup menceng ke kanan dengan rata-rata outlier {avg_out}%."
+        rekom = "Log"
+
+    elif avg_out > 3:
+        kondisi = f"Distribusi data relatif cukup stabil namun masih ditemukan rata-rata outlier sebesar {avg_out}%."
+        rekom = "Log"
+
+    else:
+        kondisi = f"Distribusi data numerik relatif stabil dengan rata-rata skewness {avg_skew} dan outlier {avg_out}%."
+        rekom = "None"
+
+    return kondisi, cek, rekom
+
+def log_transform(df):
     df = df.copy()
-
-    df["day_name"] = df["transaction_date"].dt.day_name()
-
-    day_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
-    result = (
-        df.groupby("day_name")["total_sales"]
-        .sum()
-        .reset_index()
-    )
-
-    result["day_name"] = pd.Categorical(
-        result["day_name"],
-        categories=day_order,
-        ordered=True
-    )
-
-    result = result.sort_values("day_name")
-
-    return result
-
-def normalize_data(df):
-    df = df.copy()
-
     num_cols = ["price", "discount", "quantity", "total_sales"]
-
-    # log transform (handle skew & outlier ringan)
-    X_log = np.log1p(df[num_cols])
-
-    # robust scaler (tahan outlier)
-    scaler = RobustScaler()
-    X_scaled = scaler.fit_transform(X_log)
-
-    df[num_cols] = X_scaled
-
+    df[num_cols] = np.log1p(df[num_cols])
     return df

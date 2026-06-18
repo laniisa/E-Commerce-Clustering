@@ -1,20 +1,20 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from modules.auth_check import check_login, load_css
+from modules.auth_check import *
 from components.sidebar import show_sidebar
-from components.header import *
-from modules.daashboard import get_clustering_history
-
+from modules.daashboard import *
+load_icons()
 load_css(
     "assets/style/style.css",
     "assets/style/sidebar.css",
-    "assets/style/dashboard.css"
+    "assets/style/dashboard.css",
 )
+
 
 st.markdown("""
 <style>
-[data-testid="stSidebarNav"] {display: none;}
+[data-testid="stSidebarNav"] {display:none;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -22,93 +22,145 @@ check_login()
 show_sidebar("dashboard")
 
 
-st.markdown('<div class="page-title">🏠 Dashboard</div>', unsafe_allow_html=True)
-
-st.markdown("""
-<div class="alert-box">
-Selamat datang di sistem clustering!
-</div>
-""", unsafe_allow_html=True)
-st.write("Sistem analisis data penjualan mennggunakan K-Medoids")
-
-if st.button ("Lihat Panduan"):
-    st.switch_page("pages/9_guide.py")
-
 user_id = st.session_state.user["id_user"]
 df_history = get_clustering_history(user_id)
+user_name = st.session_state.user["username"]
 
+st.title("Dashboard")
+
+st.markdown(f"""
+<div class="alert-box">
+    <div class="alert-title">Selamat Datang, {user_name} 👋</div>
+    <div class="alert-desc">
+        Sistem siap membantu Anda melakukan analisis clustering data penjualan menggunakan algoritma K-Medoids,
+        melihat riwayat proses analisis, serta menampilkan hasil segmentasi data.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+colp1, colp2, colp3 = st.columns([1,5,1])
+with colp1:
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("Panduan Sistem", use_container_width=True):
+        st.switch_page("pages/9_panduan.py")
+
+#HISTORY KOSONG
 
 if df_history.empty:
-    st.info("Belum ada riwayat clustering.")
+    st.markdown("""
+    <div class="empty-box">
+        Belum ada riwayat clustering yang tersimpan.<br>
+        Silakan lakukan proses clustering data terlebih dahulu.
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        if st.button("Mulai Clustering Sekarang", use_container_width=True):
+            st.switch_page("pages/4_upload_data.py")
     st.stop()
-# ======================
-# SUMMARY METRICS
-# ======================
-st.markdown("### 📊 Overview")
 
-col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("📁 Total Dataset", df_history["dataset_name"].nunique())
-col2.metric("📊 Total Analisis", len(df_history))
-col3.metric("📈 Silhouette (avg)", round(df_history["dbi_score"].mean(), 3))  # bisa ganti nanti
-col4.metric("📉 DBI Score", round(df_history["dbi_score"].min(), 3))
+# SAFE DATA
+
+df_history["silhouette_score"] = pd.to_numeric(df_history["silhouette_score"], errors="coerce").fillna(0)
+df_history["dbi_score"] = pd.to_numeric(df_history["dbi_score"], errors="coerce").fillna(0)
+df_history["created_at"] = pd.to_datetime(df_history["created_at"], errors="coerce")
+
+summary = get_dashboard_summary(user_id)
+
+total_dataset = summary["total_dataset"]
+total_analisis = summary["total_analisis"]
+avg_sil = summary["avg_silhouette"]
+best_dbi = summary["best_dbi"]
+
+st.markdown("### Overview")
+
+m1,m2,m3,m4 = st.columns(4)
+
+metric_data = [
+    ("Total Dataset", total_dataset),
+    ("Total Analisis", total_analisis),
+    ("Avg Silhouette", avg_sil),
+    ("Best DBI Score", best_dbi)
+]
+
+for col, item in zip([m1,m2,m3,m4], metric_data):
+    with col:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">{item[0]}</div>
+            <div class="metric-value">{item[1]}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 st.divider()
 
-# ======================
-# RECENT RESULT
-# ======================
+
+# HASIL
+
 if "selected_history" not in st.session_state:
     st.session_state.selected_history = df_history.iloc[0]["id"]
-    
+
+if "show_cluster_data" not in st.session_state:
+    st.session_state.show_cluster_data = False
+
+
+selected_df = df_history[
+    df_history["id"] == st.session_state.selected_history
+]
+
+# jika id tidak ditemukan
+
+if selected_df.empty:
+    st.session_state.selected_history = df_history.iloc[0]["id"]
+    selected_df = df_history[
+        df_history["id"] == st.session_state.selected_history
+    ]
+selected = selected_df.iloc[0]
+
+
 left, right= st.columns(2)
 
 # kiri → plot
 with left:
-    selected_id = st.session_state.selected_history 
-    selected = df_history[df_history["id"] == selected_id].iloc[0]
-
-    st.markdown("### 📌 Recent Clustering Result")
+    st.markdown("### Clustering Result")
     st.caption(f"Analysis Dataset {selected['dataset_name']} dengan k = {selected['k_cluster']}")
-
     try: 
-        st.image(selected["file_path_plot"]) 
+        st.image(selected["file_path_plot"], width=520) 
     except: 
-        st.warning("Plot tidak ditemukan")
+        st.warning("Visualisasi cluster tidak ditemukan.")
 
-    try:
-        with open(selected["file_path_result"], "rb") as f:
-            st.download_button(
-                "⬇️ Download Hasil",
-                f,
-                file_name=f"cluster-{selected['dataset_name']}.csv"
-            )
-    except:
-        st.warning("File tidak ditemukan")
+    left1, left2  = st.columns(2)
+    with left1:
+        try:
+            with open(selected["file_path_result"], "rb") as f:
+                st.download_button(
+                    ":material/download: Download Hasil",
+                    f,
+                    file_name=f"cluster-{selected['dataset_name']}.csv",
+                    use_container_width=True
+                )
+        except:
+            st.warning("File hasil clustering tidak ditemukan")
+    with left2:
+        if st.button("Lihat Data Cluster", use_container_width=True):
+            st.session_state.show_cluster_data = not st.session_state.show_cluster_data
 
 # kanan → info
 with right:
-    st.markdown("### 📋 Analysis History")
-
-    df_history["created_at"] = pd.to_datetime(df_history["created_at"], errors="coerce")
+    st.markdown("### Riwayat Analisis")
 
     if "page" not in st.session_state:
             st.session_state.page = 1
 
-    per_page = 4
+    per_page = 7
     total = len(df_history)
     total_page = (total // per_page) + (1 if total % per_page else 0)
 
     start = (st.session_state.page - 1) * per_page
     current_data = df_history[start:start + per_page]
 
-    # tampilkan tabel
-    df_show = current_data.copy()
-    df_show["created_at"] = df_show["created_at"].dt.strftime("%d-%m-%Y")
-
-    # ======================
-    # TABLE INTERAKTIF
-    # ======================
     st.markdown("""
     <div class="table-header">
         <div>Tanggal</div>
@@ -120,43 +172,35 @@ with right:
     """, unsafe_allow_html=True)
 
     for row in current_data.itertuples():
+        is_active = "history-active" if row.id == st.session_state.selected_history else ""
 
-        col1, col2, col3, col4, col5 = st.columns([2,3,1,2,1])
-
+        col1, col2, col3, col4, col5 = st.columns([2,3,1,2,2])
         tanggal = row.created_at.strftime("%d-%m-%Y")
-        dbi_color = "green" if row.dbi_score < 0.5 else "red"
-
-        is_active = row.id == st.session_state.selected_history
         
         with col1:
-            st.markdown(f"""
-            <div class="table-row">{tanggal}</div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="table-row {is_active}">{tanggal}</div>', unsafe_allow_html=True)
 
         with col2:
-            st.markdown(f"""
-            <div class="table-row">📁 {row.dataset_name}</div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="table-row {is_active}">{row.dataset_name}</div>', unsafe_allow_html=True)
 
         with col3:
-            st.markdown(f"""
-            <div class="table-row center">{row.k_cluster}</div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="table-row center {is_active}">{row.k_cluster}</div>', unsafe_allow_html=True)
 
         with col4:
-            st.markdown(f"""
-            <div class="table-row center">
-                {round(row.silhouette_score,3)} / {round(row.dbi_score, 3)} 
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="table-row center {is_active}">{round(row.silhouette_score,3)} / {round(row.dbi_score,3)}</div>', unsafe_allow_html=True)
 
         with col5:
-            if st.button("🔍", key=f"view_{row.id}"):
-                st.session_state.selected_history = row.id
-                st.rerun()
+            h1,h2= st.columns(2)
+            with h1:
+                if st.button(":material/visibility:", key=f"view_{row.id}"):
+                    st.session_state.selected_history = row.id
+                    st.session_state.show_cluster_data = False
+                    st.rerun()
+            with h2:
+                if st.button(":material/delete:", key=f"del_{row.id}"):
+                    del_analisis(row)
 
-    st.markdown('<div class="pagination">', unsafe_allow_html=True)
-
+    
     col1, col2, col3 = st.columns([6,1,1])
 
     with col1:
@@ -179,7 +223,41 @@ with right:
                 st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
-        
+
+     
+if st.session_state.show_cluster_data:
+    st.divider()
+    st.markdown("### Detail Data Hasil Clustering")
+
+    try:
+        df_cluster = pd.read_csv(selected["file_path_result"])
+
+        cluster_list = sorted(df_cluster["cluster"].unique())
+        tabs = st.tabs([f"Cluster {c}" for c in cluster_list])
+
+        for i, c in enumerate(cluster_list):
+            with tabs[i]:
+
+                data_c = df_cluster[df_cluster["cluster"] == c]
+
+                st.caption(f"Jumlah data pada cluster {c} adalah {len(data_c)}")
+                st.dataframe(data_c, use_container_width=True, height=350)
+
+                st.markdown(f"""
+                <div class="analysis-box">
+                <b>Interpretasi Cluster {c}</b><br><br>
+
+                Cluster {c} memiliki jumlah data sebanyak <b>{len(data_c)}</b>. <br>
+                Variabel <b>price</b> memiliki nilai mean sebesar <b>{round(data_c["price"].mean(),2)}</b> dan median <b>{round(data_c["price"].median(), 2)}</b>. <br>
+                Variabel <b>discount</b> memiliki nilai mean sebesar <b>{round(data_c["discount"].mean(), 2)}</b> dan median <b>{round(data_c["discount"].median(), 2)}</b>. <br>
+                Variabel <b>quantity</b> memiliki nilai mean sebesar <b>{round(data_c["quantity"].mean(), 2)}</b> dan median <b>{round(data_c["quantity"].median(), 2)}</b>. <br>
+                Variabel <b>total_sales</b> memiliki nilai mean sebesar <b>{round(data_c["total_sales"].mean(), 2)}</b> dan median <b>{round(data_c["total_sales"].median(), 2)}</b>.
+                </div>
+                """, unsafe_allow_html=True)
+    except:
+        st.warning("Data hasil clustering tidak dapat dibuka.")
+
+    
 st.divider()
 
 
@@ -188,9 +266,9 @@ st.divider()
 # ======================
 col1, col2, col3= st.columns([1,5,1])
 with col1:
-    if st.button("Panduan", key="das_pan",use_container_width=True):
-        st.switch_page("pages/9_guide.py")
+    if st.button("Panduan Sistem", key="guide_btn", use_container_width=True):
+        st.switch_page("pages/9_panduan.py")
 
 with col3:
-    if st.button("Mulai Clustering", use_container_width=True):
+    if st.button("Mulai Clustering", key="start_btn", use_container_width=True):
         st.switch_page("pages/4_upload_data.py")

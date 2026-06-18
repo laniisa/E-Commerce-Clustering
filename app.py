@@ -1,154 +1,153 @@
 import streamlit as st
-from modules.auth import *
 from modules.auth_check import load_css
 
-# ================= CONFIG =================
-st.set_page_config(page_title="Clustering Analytics", layout="wide")
 
-# ================= LOAD CSS =================
-load_css(
-    "assets/style/style.css",
-    "assets/style/login.css"
+st.set_page_config(
+    page_title="Clustering Analytics",
+    layout="wide"
 )
+load_css("assets/style/app.css")
 
 st.markdown("""
 <style>
-[data-testid="stSidebar"] {display: none;}
-footer {visibility: hidden;}
+[data-testid="stSidebar"] {display:none;}
+[data-testid="stSidebarNav"] {display:none;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ================= REDIRECT =================
-if "user" in st.session_state:
-    st.switch_page("pages/3_dashboard.py")
 
-if "mode" not in st.session_state:
-    st.session_state.mode = "login"
+nav1, nav2, nav3 = st.columns([3,4,2])
+with nav1:
+    logo1, logo2 = st.columns([1,5])
+    with logo1:
+        st.image("assets/image/clustering_icon.jpg",width=45)
+    with logo2:
+        st.markdown("""<div class="logo-text">Clustering Analytics</div>""", unsafe_allow_html=True)
+with nav3:
+    colbtn1, colbtn2 = st.columns(2)
+    with colbtn2:
+        if st.button("Sign In", use_container_width=True):
+            st.switch_page("pages/1_login.py")
 
-# ================= LAYOUT =================
-col1, col_mid, col2 = st.columns([2.5, 0.1, 1])
+left, right = st.columns([1.3, 1], gap="large")
+with left:
+    st.markdown("""
+    <div class="hero-title1">Analisis Data Penjualan</div>
+    <div class="hero-title2">Berbasis EDA & K-Medoids</div>
+    """, unsafe_allow_html=True)
 
-# ================= LEFT SIDE =================
+    st.markdown("""
+    <div class="hero-desc">
+        Platform analisis data penjualan multi-platform e-commerce ( Shopee, Lazada, dan TiktokShop)
+        untuk membantu pelaku usaha memahami tren historis penjualan,
+        performa produk, dan segmentasi produk menggunakan pendekatan
+        <b>EDA</b> dan <b>K-Medoids Clustering</b>.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="feature-list">
+        <div>✔ Visualisasi Data Penjualan</div>
+        <div>✔ Clustering K-Medoids</div>
+        <div>✔ Analisis Multi Platform</div>
+        <div>✔ Insight Berbasis Data</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1,col2 = st.columns([1,4])
+    with col1:
+        if st.button("Get Started", use_container_width=True):
+            st.switch_page("pages/1_login.py")
+
+with right:
+    st.markdown('<div class="hero-image">', unsafe_allow_html=True)
+    st.image("assets/image/data-analiysis.png", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("""
+<div class="section-title">
+    Fitur Utama
+</div>
+""", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+
 with col1:
-    st.markdown('<div class="hero">', unsafe_allow_html=True)
-
-    st.markdown('<div class="hero-badge">🚀 Data Intelligence Platform</div>', unsafe_allow_html=True)
-
-    st.markdown('<h1>Clustering Analytics</h1>', unsafe_allow_html=True)
-
     st.markdown("""
-    Platform analisis data penjualan multi e-commerce menggunakan 
-    <b>K-Medoids Clustering</b> untuk membantu bisnis memahami:
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="hero-features">
-    ✔ Produk terlaris berdasarkan pola pembelian <br>
-    ✔ Segmentasi pelanggan & market <br>
-    ✔ Insight strategi penjualan berbasis data
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ======= FAKE CHART (VISUAL ONLY) =======
-    st.markdown("""
-    <div class="chart-card">
-        <div class="chart-title">Sales Clustering Insight</div>
-        <div class="bars">
-            <div class="bar" style="height:70%"></div>
-            <div class="bar" style="height:50%"></div>
-            <div class="bar" style="height:90%"></div>
-            <div class="bar" style="height:60%"></div>
-            <div class="bar" style="height:80%"></div>
-        </div>
-        <div class="chart-labels">
-            <span>C1</span><span>C2</span><span>C3</span><span>C4</span><span>C5</span>
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Exploratory Data Analysis</div>
+        <div class="feature-desc">
+            Menampilkan statistik deskriptif,
+            distribusi data, visualisasi tren penjualan,
+            dan performa penjualan antar platform.
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<a class="try-btn">🚀 Mulai Sekarang</a>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ================= DIVIDER =================
-with col_mid:
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-# ================= RIGHT SIDE =================
 with col2:
-    st.markdown('<div class="auth-card">', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="feature-card">
+        <div class="feature-icon">🧩</div>
+        <div class="feature-title">K-Medoids Clustering</div>
+        <div class="feature-desc">
+            Mengelompokkan produk berdasarkan
+            karakteristik penjualan sehingga menghasilkan
+            segmentasi produk yang lebih terstruktur.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if st.session_state.mode == "login":
+with col3:
+    st.markdown("""
+    <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <div class="feature-title">Riwayat Analisis</div>
+        <div class="feature-desc">
+            Menyimpan hasil clustering dan visualisasi
+            data sehingga dapat diakses kembali kapan saja.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        st.markdown('<div class="auth-title">Login</div>', unsafe_allow_html=True)
-        st.markdown('<div class="auth-subtitle">Masuk ke akun anda</div>', unsafe_allow_html=True)
 
-        email = st.text_input("Email", placeholder="Masukkan email")
-        password = st.text_input("Password", type="password", placeholder="Masukkan password")
+# WORKFLOW
 
-        if st.button("Login", use_container_width=True):
+st.markdown("""
+<div class="section-title">
+    Alur Penggunaan Sistem
+</div>
+""", unsafe_allow_html=True)
 
-            if not email or not password:
-                st.warning("Semua field wajib diisi!")
-            else:
-                with st.spinner("Memproses login..."):
-                    user = login_user(email, password)
+workflow1, workflow2, workflow3, workflow4, workflow5 = st.columns(5)
 
-                if user:
-                    st.session_state.user = user
-                    st.success("Login berhasil!")
-                    st.switch_page("pages/3_dashboard.py")
-                else:
-                    st.error("Email atau password salah!")
+steps = [
+    ("1", "Upload Dataset"),
+    ("2", "EDA & Visualisasi"),
+    ("3", "Preprocessing"),
+    ("4", "K-Medoids"),
+    ("5", "Interpretasi")
+]
 
-        st.markdown("---")
+for col, step in zip(
+    [workflow1, workflow2, workflow3, workflow4, workflow5],
+    steps
+):
+    with col:
+        st.markdown(f"""
+        <div class="step-card">
+            <div class="step-number">{step[0]}</div>
+            <div class="step-text">{step[1]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+# FOOTER
 
-        col_a, col_b = st.columns([2,1])
-        with col_a:
-            st.write("Belum punya akun?")
-        with col_b:
-            if st.button("Daftar", key="to_register"):
-                st.session_state.mode = "register"
-                st.rerun()
-
-    else:
-        st.markdown('<div class="auth-title">Register</div>', unsafe_allow_html=True)
-        st.markdown('<div class="auth-subtitle">Buat akun baru</div>', unsafe_allow_html=True)
-
-        username = st.text_input("Username", placeholder="Masukkan username")
-        email = st.text_input("Email", placeholder="Masukkan email")
-        password = st.text_input("Password", type="password", placeholder="Minimal 8 karakter")
-        confirm_password = st.text_input("Konfirmasi Password", type="password")
-
-        if st.button("Daftar", use_container_width=True):
-            if not username or not email or not password:
-                st.warning("Semua field wajib diisi!")
-
-            elif password != confirm_password:
-                st.error("Password tidak sama!")
-
-            else:
-                valid, message = is_strong_password(password)
-
-                if not valid:
-                    st.error(message)
-                else:
-                    with st.spinner("Membuat akun..."):
-                        success = register_user(username, email, password)
-
-                    if success:
-                        st.success("Registrasi berhasil! Silakan login.")
-                        st.session_state.mode = "login"
-                        st.rerun()
-                    else:
-                        st.error("Email sudah digunakan!")
-
-        st.markdown("---")
-
-        st.markdown('<div class="switch-text">Sudah punya akun?</div>', unsafe_allow_html=True)
-
-        if st.button("Login", key="to_login"):
-            st.session_state.mode = "login"
-            st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="footer">
+    Sistem Analisis Clustering berbasis K-Medoids • @2026
+</div>
+""", unsafe_allow_html=True)

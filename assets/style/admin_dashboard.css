@@ -1,0 +1,93 @@
+
+.stApp {
+    background: #f9fafb !important;
+}
+.page-title{
+    font-size:34px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:10px;
+}
+
+
+h3{
+    margin-top:6px;
+    margin-bottom:12px;
+    color:#111827;
+}
+
+[data-testid="stImage"] img{
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+    max-height:300px;
+    object-fit:contain;
+}
+
+/* HEADER TABLE */
+.table-header{
+    display:grid;
+    grid-template-columns:2fr 3fr 1fr 2fr 1fr;
+    font-size:12px;
+    font-weight:700;
+    color:#64748b;
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    margin-bottom:6px;
+    text-align:center;
+}
+
+/* BARIS */
+.table-row{
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:6px;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    min-height:42px;
+    transition:0.2s;
+}
+
+.table-row:hover{
+    background:#f8fbff;
+}
+
+.center{
+    justify-content:center;
+    text-align:center;
+}
+
+.page-text{
+    margin-top:8px;
+    font-size:12px;
+    color:#64748b;
+}
+
+button[data-baseweb="tab"]{
+    font-weight:600;
+}
+
+
+[data-testid="stDataFrame"]{
+    border-radius:12px;
+}
+
+
+[data-testid="stDialog"]{
+    border-radius:18px;
+}
+
+.stButton > button{
+    border-radius:10px;
+    font-weight:500;
+}
+
+.stTextInput input{
+    border-radius:10px;
+}
+
+[data-testid="column"] .metric-card{
+    height:100%;
+}

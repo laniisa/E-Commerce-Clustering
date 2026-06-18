@@ -2,9 +2,9 @@ import re
 import bcrypt
 from config.database import connect_db
 
-# ======================
+
 # VALIDASI PASSWORD
-# ======================
+
 def is_strong_password(password):
     if len(password) < 8:
         return False, "Minimal 8 karakter"
@@ -17,9 +17,13 @@ def is_strong_password(password):
     return True, ""
 
 
-# ======================
+def is_valid_email(email):
+    pattern = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+    return re.match(pattern, email)
+
+
 # REGISTER
-# ======================
+
 def register_user(username, email, password):
     conn = connect_db()
     cursor = conn.cursor()
@@ -29,10 +33,10 @@ def register_user(username, email, password):
 
     try:
         query = """
-        INSERT INTO users (username, email, password)
+        INSERT INTO users (username, email, password, role)
         VALUES (%s, %s, %s)
         """
-        cursor.execute(query, (username, email, hashed))
+        cursor.execute(query, (username, email, hashed, "admin"))
         conn.commit()
         return True
 
@@ -44,9 +48,9 @@ def register_user(username, email, password):
         conn.close()
 
 
-# ======================
+
 # LOGIN
-# ======================
+
 def login_user(email, password):
     conn = connect_db()
     cursor = conn.cursor(dictionary=True)

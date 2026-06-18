@@ -1,147 +1,160 @@
 
-
-
-.card-title {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 10px;
+.stApp {
+    background: #f9fafb !important;
+}
+.page-title{
+    font-size:34px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:10px;
 }
 
-/* ======================
-   HEADER
-====================== */
-.page-title {
+.alert-box{
+    background:#eef4ff;
+    border-left:4px solid #5689e8;
+    color:#334155;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:16px;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.alert-title{
+    font-size:17px;
+    font-weight:700;
+    color:#1e3a8a;
+    margin-bottom:6px;
+}
+
+.alert-desc{
+    font-size:13px;
+    color:#475569;
+    line-height:1.7;
+}
+
+.empty-box{
+    background:#ffffff;
+    border:1px dashed #cbd5e1;
+    border-radius:14px;
+    padding:30px;
+    text-align:center;
+    color:#64748b;
+    margin:20px 0;
+}
+
+.metric-card{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.03);
+}
+
+.metric-label{
+    font-size:13px;
+    color:#64748b;
+    margin-bottom:8px;
+}
+
+.metric-value{
+    font-size:28px;
+    font-weight:700;
+    color:#5689e8;
+}
+
+h3{
+    margin-top:6px;
+    margin-bottom:12px;
+    color:#111827;
+}
+
+[data-testid="stImage"] img{
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+    max-height:300px;
+    object-fit:contain;
+}
+
+/* HEADER TABLE */
+.table-header{
+    display:grid;
+    grid-template-columns:2fr 3fr 1fr 2fr 2fr;
+    font-size:12px;
+    font-weight:700;
+    color:#64748b;
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    margin-bottom:6px;
+    text-align:center;
+}
+
+/* BARIS */
+.table-row{
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:6px;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    min-height:42px;
+    transition:0.2s;
+}
+
+.table-row:hover{
+    background:#f8fbff;
+}
+
+.center{
+    justify-content:center;
+    text-align:center;
+}
+
+.page-text{
+    margin-top:8px;
+    font-size:12px;
+    color:#64748b;
+}
+
+/* ACTIVE HISTORY YANG DIPILIH */
+.history-active{
+    background:#dbeafe !important;
+    border:1px solid #60a5fa !important;
+    color:#1d4ed8 !important;
+    font-weight:600;
+    box-shadow:0 0 0 1px #93c5fd inset;
+}
+
+.welcome-box {
+    padding: 28px;
+    border-radius: 24px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(99,102,241,0.12),
+        rgba(236,72,153,0.10)
+    );
+
+    border: 1px solid rgba(255,255,255,0.4);
+
+    backdrop-filter: blur(12px);
+
+    margin-bottom: 25px;
+}
+
+.welcome-title {
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 800;
     color: #111827;
-}
-
-.metric-box {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 18px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.metric-box h3 {
-    color: #111827;
-    font-size: 22px;
-}
-
-.metric-box p {
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.alert-box {
-    background: #fce7f3;
-    color: #9d174d;
-    padding: 10px;
-    border-radius: 8px;
-}
-/* ======================
-   HISTORY CARD
-====================== */
-.history-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    transition: 0.2s;
-}
-
-.history-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-.small-text {
-    color: #777;
-    font-size: 13px;
-}
-
-/* ======================
-   HISTORY LIST
-====================== */
-.history-item {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    transition: 0.2s;
-}
-
-.history-item:hover {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.history-meta {
-    font-size: 13px;
-    color: #6b7280;
-}
-
-/* CARD STYLE */
-[data-testid="metric-container"] {
-    background: white;
-    border: 1px solid #e5e7eb;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-/* SECTION TITLE */
-h3 {
-    margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.table-header {
-    display: grid;
-    grid-template-columns: 2fr 3fr 1fr 2fr 1fr;
-    font-size: 13px;
-    font-weight: bold;
-    color: #6b7280;
-    padding: 8px;
-    border-bottom: 2px solid #e5e7eb;
-    align-items: center;
+.welcome-desc {
+    font-size: 15px;
+    color: #4b5563;
+    line-height: 1.7;
+    max-width: 850px;
 }
-
-.table-header div:nth-child(2),
-.table-header div:nth-child(3) {
-    text-align: center;
-}
-
-/* ROW */
-.table-row {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 8px;
-    border-radius: 8px;
-    margin-bottom: 4px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    transition: 0.2s;
-}
-
-/* HOVER */
-.table-row:hover {
-    background: #f9fafb;
-    transform: scale(1.01);
-}
-.center {
-    text-align: center;
-}
-
-.table-row.center {
-    justify-content: center;
-}
-/* ACTIVE */
-.active-row {
-    border: 1px solid #6366f1;
-    background: #eef2ff;
-}
-

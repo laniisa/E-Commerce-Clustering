@@ -1,75 +1,100 @@
-/* FIXED SIDEBAR */
+/* SIDEBAR */
 section[data-testid="stSidebar"] {
-    width: 260px;
-    background: #f9fafb;
+    width: 250px !important;
+    background: #f8fafc;
     border-right: 1px solid #e5e7eb;
 }
 
-
-/* WRAPPER */
-.sb-wrapper {
-    font-family: 'Segoe UI', sans-serif;
-    padding: 10px 12px;
+section[data-testid="stSidebar"] > div:first-child > div {
+    padding-top: 0.8rem;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
+.sb-logo{
+    margin-bottom: 0px;
+}
+
+/* TITLE */
 .sb-title {
+    font-size: 24px;
     font-weight: 700;
-    font-size: 28px;
     color: #111827;
-    margin-top: 4px;
 }
 
 .sb-sub {
-    font-size: 12px;
+    font-size: 13px;
     color: #6366f1;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+    margin-top: 3px;
 }
 
 /* GROUP */
 .sb-group {
-    font-size: 11px;
-    color: #9ca3af;
-    margin-top: 18px;
-    margin-bottom: 6px;
+    font-size: 14px;
+    color: #94a3b8;
+    font-weight: 700;
     letter-spacing: 1px;
-    padding-left: 6px;
+    margin-top: 16px;
+    margin-bottom: 8px;
 }
 
-/* BUTTON BASE */
-.sb-wrapper .stButton > button {
-    all: unset;
-    display: block;
-    width: 100%;
-    padding: 8px 12px 8px 12px; /* ⬅️ lebih ke dalam */
-    font-size: 13px;
-    color: #374151;
-    cursor: pointer;
+/* PAGE LINK */
+section[data-testid="stSidebar"] [data-testid="stPageLink"] {
+    margin-bottom: 2px !important;
+    margin-left: 4px;
+}
+
+section[data-testid="stSidebar"] [data-testid="stPageLink"] a {
     border-radius: 6px;
-    text-align: left !important; /* ⬅️ penting */
+    padding: 2px 4px;
+    min-height: 20px !important;
+    margin-bottom: 0px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
 }
 
-/* HOVER */
-.sb-wrapper .stButton > button:hover {
-    background: #c1d1f2;
+section[data-testid="stSidebar"] [data-testid="stPageLink"] a:hover {
+    background: #eef2ff;
     color: #4338ca;
 }
 
-.sb-link {
-    padding: 8px 12px 8px 18px; /* konsisten */
-    font-size: 13px;
+/* ACTIVE PAGE AUTO */
+section[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] {
+    background: #dfe5f9;
     color: #4338ca;
     border-left: 3px solid #6366f1;
-    background: #eef2ff;
-    border-radius: 6px;
-    margin-bottom: 2px;
+    font-weight: 600;
+}
+section[data-testid="stSidebar"] .stButton > button {
+    border: none !important;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #fff1f2 !important;
+    color: #e11d48 !important;
+    box-shadow: none !important;
+    transition: 0.2s ease;
 }
 
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: #ffe4e6 !important;
+    color: #be123c !important;
+}
+/* BOTTOM */
+.sb-bottom {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 10px;
+    padding-top: 14px;
+    border: none;
+}
 
-/* USER */
 .sb-user {
-    padding: 10px;
     text-align: center;
     font-size: 13px;
-    color: #374151;
+    color: #475569;
+    margin-bottom: 8px;
 }
-

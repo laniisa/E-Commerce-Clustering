@@ -1,42 +1,52 @@
-.step-box {
-    background: linear-gradient(135deg, #ffffff, #f8f9ff);
-    padding: 20px;
-    border-radius: 14px;
-    margin-bottom: 20px;
-    border: 1px solid #eee;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+.alert-box{
+    background:#eef4ff;
+    border-left:4px solid #5689e8;
+    color:#334155;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:16px;
+    font-size:14px;
+    line-height:1.6;
 }
 
-.step-title {
-    font-weight: 600;
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
+.alert-title{
+    font-size:17px;
+    font-weight:700;
+    color:#1e3a8a;
+    margin-bottom:6px;
 }
 
-.success-box {
-    background: #e6ffe6;
-    padding: 12px;
+.alert-desc{
+    font-size:13px;
+    color:#475569;
+    line-height:1.7;
+}
+
+.analysis-box{
+    background: #f8fafc;
+    border-left: 4px solid #5689e8;
+    padding: 16px;
     border-radius: 10px;
-    color: #2e7d32;
-    font-weight: 500;
+    margin-top: 12px;
+    line-height: 1.8;
+    text-align: justify;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-.metric-card {
-    background: white;
+.cluster-section{
+    background: rgba(255,255,255,0.6);
+    border: 1px solid #e5e7eb;
     padding: 15px;
     border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    margin-bottom: 18px;
 }
 
-.metric-value {
-    font-size: 22px;
-    font-weight: bold;
-    color: #ff4b8b;
+div[data-baseweb="tab-list"]{
+    gap:8px;
 }
 
-.metric-label {
-    font-size: 13px;
-    color: gray;
+button[role="tab"]{
+    border-radius:8px !important;
 }
+

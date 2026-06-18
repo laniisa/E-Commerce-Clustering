@@ -1,36 +1,39 @@
 import streamlit as st
 import pandas as pd
-from modules.auth_check import check_login, load_css
+from modules.auth_check import *
 from components.sidebar import show_sidebar
 from modules.upload import get_dataset_files
 from modules.preprocessing import *
 
-# ======================
-# CONFIG
-# ======================
-st.markdown("""
-<style>
-[data-testid="stSidebarNav"] {display: none;}
-</style>
-""", unsafe_allow_html=True)
-
+load_icons()
 load_css(
     "assets/style/style.css",
     "assets/style/sidebar.css",
     "assets/style/preprocessing.css"
 )
 
+st.markdown("""
+<style>
+[data-testid="stSidebarNav"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+
 check_login()
 show_sidebar("preprocessing")
 
-# ======================
-# LOAD DATASET
-# ======================
-dataset_id = st.session_state.get("active_dataset_id")
-st.title("⚙️ Preprocessing Data")
 
+dataset_id = st.session_state.get("active_dataset_id")
+
+st.title("Preprocessing Data")
+st.markdown(f"""
+<div class="alert-box">
+    <div class="alert-desc">
+        Halaman ini menampilkan proses preprocessing data yang dilakukan untuk mempersiapkan dataset sebelum analisis clustering.
+    </div>
+</div>
+""", unsafe_allow_html=True)
 if not dataset_id:
-    st.warning("Pilih dataset dulu di halaman upload!")
+    st.warning("Silahkan pilih dataset terlebih dahulu di halaman upload!")
     st.stop()
 
 files = get_dataset_files(dataset_id)
@@ -47,11 +50,10 @@ for file in files:
     raw_dfs.append(df)
     platforms.append(file["platform"])
 
-# ======================
-# INIT SESSION STATE
-# ======================
+
 if "pipeline" not in st.session_state:
     st.session_state.pipeline = {
+        "preview": True,
         "cleaning": False,
         "selection": False,
         "transform": False,
@@ -64,6 +66,7 @@ if "last_dataset_id" not in st.session_state:
 
 if st.session_state.last_dataset_id != dataset_id:
     st.session_state.pipeline = {
+        "preview": True,
         "cleaning": False,
         "selection": False,
         "transform": False,
@@ -75,13 +78,11 @@ if st.session_state.last_dataset_id != dataset_id:
 
     st.session_state.last_dataset_id = dataset_id
 
-# ======================
-# HEADER
-# ======================
+
 st.caption("Pipeline pembersihan & transformasi data multi-platform")
 
 
-st.markdown("### 🔄 Progress Pipeline")
+st.markdown("### Progress Pipeline")
 if "active_step" not in st.session_state:
     st.session_state.active_step = "preview"
 steps = [
@@ -94,8 +95,6 @@ steps = [
 
 cols = st.columns(len(steps))
 
-cols = st.columns(len(steps))
-
 for i, (key, label) in enumerate(steps):
 
     is_done = st.session_state.pipeline.get(key, False)
@@ -104,23 +103,50 @@ for i, (key, label) in enumerate(steps):
     icon = "✅" if is_done else "⬜"
     if cols[i].button(f"{icon}\n{label}", key=f"step_{key}"):
         st.session_state.active_step = key
+        if key == "cleaning":
+            st.session_state.pipeline["cleaning"] = True
 
+        elif key == "selection":
+            if st.session_state.pipeline["cleaning"]:
+                st.session_state.pipeline["selection"] = True
 
-# ======================
-# PREVIEW (RINGKASAN, BUKAN TABLE)
-# ======================
+        elif key == "transform":
+            if st.session_state.pipeline["selection"]:
+                st.session_state.pipeline["transform"] = True
+
+        elif key == "integration":
+            if st.session_state.pipeline["transform"]:
+                st.session_state.pipeline["integration"] = True
+
+        st.rerun()
+
+st.divider()
+
+# PREVIEW 
+
 if st.session_state.active_step == "preview":
 
-    st.markdown("### 📊 Ringkasan Dataset")
+    st.markdown("### Ringkasan Dataset")
 
     total_rows, total_cols, total_missing = dataset_overview(raw_dfs)
 
     c1, c2, c3, c4 = st.columns(4)
 
-    c1.metric("Total Data", total_rows)
-    c2.metric("Total Kolom", total_cols)
-    c3.metric("Total Missing", total_missing)
-    c4.metric("Jumlah File", len(raw_dfs))
+    data_metric = [
+        ("Total Data", total_rows),
+        ("Total Kolom", total_cols),
+        ("Total Missing", total_missing),
+        ("Jumlah File", len(raw_dfs))
+    ]
+
+    for col, item in zip([c1,c2,c3,c4], data_metric):
+        with col:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">{item[0]}</div>
+                <div class="metric-value">{item[1]}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -147,9 +173,9 @@ if st.session_state.active_step == "preview":
             st.switch_page("pages/4_upload_data.py")
 
 
-# ======================
+
 # CLEANING
-# ======================
+
 elif st.session_state.active_step == "cleaning":
 
     if "cleaned" not in st.session_state:
@@ -157,29 +183,41 @@ elif st.session_state.active_step == "cleaning":
             clean_data(df, p)
             for df, p in zip(raw_dfs, platforms)
         ]
-        st.session_state.pipeline["cleaning"] = True
+        
+    st.markdown("### Hasil Cleaning")
 
-    st.markdown("### 🧹 Hasil Cleaning")
+    before_rows, before_cols, before_missing = dataset_overview(raw_dfs)
+    after_rows, after_cols, after_missing = dataset_overview(st.session_state.cleaned)
+    
+    c1,c2,c3 = st.columns(3)
+    c1.metric("Rows", after_rows, after_rows-before_rows)
+    c2.metric("Columns", after_cols, after_cols-before_cols)
+    c3.metric("Missing", after_missing, after_missing-before_missing)
 
-    total_rows, total_cols, total_missing = dataset_overview(st.session_state.cleaned)
-
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Rows", total_rows)
-    c2.metric("Columns", total_cols)
-    c3.metric("Missing", total_missing)
-
+    st.success("""
+        Sistem berhasil menghapus data transaksi batal, retur, refund, 
+        serta data yang tidak memenuhi status transaksi selesai pada masing-masing platform.
+        """)
     show_quality(pd.concat(st.session_state.cleaned))
+    
+    for df,file in zip(st.session_state.cleaned, files):
+        st.markdown(f"""
+        <div class="block">
+        <b>{file['file_name']}</b><br>
+        Platform: {file['platform']} | Rows: {df.shape[0]} | Columns: {df.shape[1]} | Missing: {df.isna().sum().sum()}
+        </div>
+        """, unsafe_allow_html=True)
 
-    for df, file in zip(st.session_state.cleaned, files):
-        show_summary(df, file["file_name"], file["platform"])
-        st.dataframe(df, use_container_width=True, height=400)
-# ======================
+        
+        st.dataframe(df, use_container_width=True, height=300)
+
+
 # SELECTION
-# ======================
+
 elif st.session_state.active_step == "selection":
 
     if not st.session_state.pipeline["cleaning"]:
-        st.warning("⚠️ Cleaning dulu!")
+        st.warning("Lakukan Cleaning terlebih dahulu!")
         st.stop()
 
     if "selected" not in st.session_state:
@@ -187,78 +225,87 @@ elif st.session_state.active_step == "selection":
             select_columns(df, p)
             for df, p in zip(st.session_state.cleaned, platforms)
         ]
-        st.session_state.pipeline["selection"] = True
-
-    st.markdown("### 🎯 Hasil Selection")
-
-    show_quality(pd.concat(st.session_state.selected))
-
+        
+    st.markdown("### Hasil Selection")
+    st.success("Sistem menyeleksi hanya atribut yang relevan terhadap analisis penjualan dan clustering.")
+    
     for df, file in zip(st.session_state.selected, files):
-        show_summary(df, file["file_name"], file["platform"])
-        st.dataframe(df, use_container_width=True, height=400)
+        st.markdown(f"""
+        <div class="block">
+        <b>{file['file_name']}</b><br>
+        Platform: {file['platform']} | Rows: {df.shape[0]} | Columns: {df.shape[1]}
+        </div>
+        """, unsafe_allow_html=True)
 
-# ======================
+        st.dataframe(df, use_container_width=True, height=300)
+
+
 # TRANSFORM
-# ======================
+
 elif st.session_state.active_step == "transform":
 
     if not st.session_state.pipeline["selection"]:
-        st.warning("⚠️ Selection dulu!")
+        st.warning("Lakukan Selection terlebih dahulu!")
         st.stop()
 
     if "transformed" not in st.session_state:
         st.session_state.transformed = [
-            transform_data(df, p)
-            for df, p in zip(st.session_state.selected, platforms)
+            transform_data(df, platform)
+            for df, platform in zip(st.session_state.selected, platforms)
         ]
-        st.session_state.pipeline["transform"] = True
-
-    st.markdown("### 🔄 Hasil Transform")
-
+    st.markdown("###  Hasil Transform")
     total_rows, total_cols, total_missing = dataset_overview(st.session_state.transformed)
 
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Rows", total_rows)
-    c2.metric("Columns", total_cols)
-    c3.metric("Missing", total_missing)
+    df_tf = pd.concat(st.session_state.transformed, ignore_index=True)
 
-    show_quality(pd.concat(st.session_state.transformed))
+    c1,c2,c3 = st.columns(3)
+    c1.metric("Rows", total_rows)
+    c2.metric("Unique Prroduct", df_tf["product_name"].nunique())
+    c3.metric("Platform", df_tf["platform"].nunique())
+    
+    st.success("""
+    Sistem berhasil melakukan standardisasi struktur data multi-platform,
+    pembersihan numerik, normalisasi nama produk, serta pembentukan dataset analisis untuk proses clustering.
+    """)
     
     for df, file in zip(st.session_state.transformed, files):
-        show_summary(df, file["file_name"], file["platform"])
-        st.dataframe(df, use_container_width=True, height=400)
+        st.markdown(f"""
+        <div class="block">
+        <b>{file['file_name']}</b><br>
+        Platform: {file['platform']} | Rows: {df.shape[0]} | Columns: {df.shape[1]}
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.dataframe(df, use_container_width=True, height=300)
     
-# ======================
+    
 # INTEGRATION
-# ======================
+
 elif st.session_state.active_step == "integration":
 
     if not st.session_state.pipeline["transform"]:
-        st.warning("⚠️ Transform dulu!")
+        st.warning("Lakukan Transform terlebih dahulu!")
         st.stop()
 
     if "integrated" not in st.session_state:
-        st.session_state.integrated = integrate_data(
-            st.session_state.transformed
-        )
-        st.session_state.pipeline["integration"] = True
-
-    st.markdown("### 🔗 Hasil Integration")
+        merged = integrate_data(st.session_state.transformed)
+        st.session_state.integrated = merged
 
     df = st.session_state.integrated
 
-    c1, c2, c3 = st.columns(3)
+    st.markdown("### Hasil Integration")
+
+    c1,c2,c3 = st.columns(3)
     c1.metric("Rows", df.shape[0])
     c2.metric("Columns", df.shape[1])
     c3.metric("Missing", df.isna().sum().sum())
 
+    st.success("Sistem berhasil mengintegrasikan seluruh data platform .")
     show_quality(df)
+    st.dataframe(df, use_container_width=True, height=450)
 
-    st.dataframe(st.session_state.integrated, use_container_width=True, height=500)
+# BUTTON
 
-# ======================
-# NAV BUTTON
-# ======================
     st.markdown("<br>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1,6,1])

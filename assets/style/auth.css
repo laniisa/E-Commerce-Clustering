@@ -1,0 +1,129 @@
+.stApp {
+    background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+}
+/* ===== HEADER FIX ===== */
+.main-title {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    color: #111827;
+    margin-bottom: 4px !important; /* 🔥 ini kunci */
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 0 !important;
+    margin-bottom: 18px !important;
+}
+
+/* FORCE OVERRIDE STREAMLIT TITLE (kalau masih bandel) */
+h1 {
+    margin-bottom: 4px !important;
+}
+
+/* ===== FORM ===== */
+.form-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/* INPUT */
+.stTextInput input {
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+/* BUTTON */
+.stButton > button {
+    height: 42px;
+    border-radius: 10px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    border: none;
+    color: white;
+    transition: 0.2s;
+}
+
+.stButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(99,102,241,0.25);
+}
+
+/* TEXT CENTER */
+.switch-center {
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+div[data-testid="column"] .stButton > button {
+    height: 36px !important;
+    font-size: 13px !important;
+}
+
+/* KHUSUS BUTTON FULL (SIGN IN) */
+.block-container > div > div > div > div .stButton:first-of-type button {
+    height: 42px;
+    font-size: 14px;
+}
+/* BUTTON JADI KAYAK LINK */
+section[data-testid="stButton"] button[kind="secondary"] {
+    background: transparent !important;
+    border: none !important;
+    color: #6366f1 !important;
+    font-size: 13px !important;
+    padding: 0 !important;
+    height: auto !important;
+    box-shadow: none !important;
+    display: block;
+    margin: auto;
+}
+
+/* HOVER */
+section[data-testid="stButton"] button[kind="secondary"]:hover {
+    text-decoration: underline;
+    color: #4f46e5 !important;
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+    text-align: center;
+    margin: 16px 0;
+    font-size: 12px;
+    color: #9ca3af;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    position: absolute;
+    width: 40%;
+    height: 1px;
+    background: #e5e7eb;
+    top: 50%;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+/* ===== SWITCH TEXT ===== */
+.switch-inline {
+    display: flex;
+    height: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+/* ===== GLOBAL SPACING FIX ===== */
+.block-container {
+    padding-top: 20px !important;
+    max-width: 450px !important; /* 🔥 bikin form lebih compact */
+}

@@ -1,57 +1,20 @@
 
 
-.dataset-meta {
-    margin-top: 4px;
+.alert-box{
+    background:#eef4ff;
+    border-left:4px solid #5689e8;
+    color:#334155;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-size:14px;
+    line-height:1.7;
 }
 
-.dataset-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #f1f5f9;
-    background: #ffffff;
-}
-
-.dataset-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 10px 12px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    transition: 0.2s;
-}
-
-.dataset-card:hover {
-    background: #f8fafc;
-}
-
-.dataset-card.active {
-    border: 1px solid #6366f1;
-    background: #eef2ff;
-}
-
-.info-box {
-    background: #eef2ff;
-    border: 1px solid #c7d2fe;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 13px;
-    color: #3730a3;
-}
-
-
-/* TABLE PREVIEW */
-[data-testid="stDataFrame"] {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
+/* HEADER TABLE RIWAYAT */
 .table-header {
     display: grid;
-    grid-template-columns: 4fr 2fr 1fr;
+    grid-template-columns: 4fr 2fr 2fr;
     font-size: 13px;
     font-weight: 600;
     color: #6b7280;
@@ -65,7 +28,7 @@
     text-align: center;
 }
 
-/* ROW */
+/* ROW DATASET */
 .table-row {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -76,32 +39,59 @@
     display: flex;
     align-items: center;
     transition: 0.2s;
+    min-height: 42px;
 }
 
-/* HOVER */
 .table-row:hover {
     background: #f9fafb;
-    transform: scale(1.01);
 }
 
 .table-row.center {
     justify-content: center;
 }
-/* ACTIVE */
+
+/* DATASET ACTIVE */
 .active-row {
-    border: 1px solid #6366f1;
-    background: #eef2ff;
+    background:#dbeafe !important;
+    border:1px solid #60a5fa !important;
+    color:#1d4ed8 !important;
+    font-weight:600;
+    box-shadow:0 0 0 1px #93c5fd inset;
 }
 
-input {
-    border-radius: 10px !important;
-    padding: 8px !important;
+/* PAGINATION */
+.page-text{
+    margin-top:8px;
+    font-size:12px;
+    color:#64748b;
 }
 
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    .upload-card, .history-card {
-        height: auto;
-    }
+/* SUMMARY FILE */
+.summary-box{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-left:4px solid #5689e8;
+    padding:16px;
+    border-radius:10px;
+    margin-bottom:10px;
 }
+
+.summary-meta{
+    margin-top:4px;
+    font-size:13px;
+    color:#64748b;
+}
+
+/* DATAFRAME */
+[data-testid="stDataFrame"]{
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+/* INPUT */
+input{
+    border-radius:10px !important;
+}
+
